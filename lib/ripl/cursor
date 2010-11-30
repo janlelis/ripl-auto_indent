@@ -1,0 +1,3 @@
+print `tput clear`
+puts 23
+print `tput cuu1` + '56'
