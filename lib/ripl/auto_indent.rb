@@ -1,31 +1,43 @@
 require 'ripl'
 require 'ripl/multi_line'
 require 'coderay'
+#require 'open3'
 
 module Ripl
   module AutoIndent
-    VERSION = '0.1.0'
+    VERSION = '0.1.1'
     TPUT = {
       :sc   => `tput sc`,   # save current cursor position
-      :cuu1 => `tput cuu1`, # move cursor upwards    to the original input line
-      :cuf1 => `tput cuf1`, # move cursor rightwards to the original input offset
+      :cuu1 => `tput cuu1`, # move cursor on line upwards
       :rc   => `tput rc`,   # return to normal cursor position
     }
 
     def before_loop
-      super
       @current_indent = 0
+      super
     end
 
     def get_indent(buffer)
-      indent = 0
+      #syntax_ok = proc{ |code|
+      #  Open3.popen3('ruby -c'){ |sin, sout, _|
+      #    sin << code
+      #    sin.close
+      #    sout.read.chomp
+      #  } == "Syntax OK"
+      #}
+
       opening_tokens = %w[begin case class def for if module unless until while do {]
       closing_tokens = %w[end }]
+      indent = 0
       # parse each token
       buffer_tokens = CodeRay.scan(buffer, :ruby)
       buffer_tokens.each{ |token, kind|
         if kind == :reserved || kind == :operator
           if opening_tokens.include? token
+            # modifiers cause trouble - so guess, if it is intended as one 
+            #  (because the current line has valid syntax)
+            #next if %w[if unless until while].include?(token) && syntax_ok[ line ]
+
             indent += 1
           elsif closing_tokens.include? token
             indent -= 1
@@ -41,17 +53,19 @@ module Ripl
     end
 
     def rewrite_line(append_indents = 0)
-      print TPUT[:sc] +
-            TPUT[:cuu1] +
-            prompt + 
-            @input +
-            config[:auto_indent_space]*append_indents +
-            TPUT[:rc]
+      print_method = defined?(Ripl::ColorStreams) ? :real_write : :write
+      $stdout.send print_method,
+        TPUT[:sc] +
+        TPUT[:cuu1] +
+        prompt + 
+        @input +
+        config[:auto_indent_space]*append_indents +
+        TPUT[:rc]
     end
 
-    def eval_input(input)
+    def loop_eval(input)
       last_indent     = @current_indent
-      @current_indent = get_indent(@buffer ? @buffer + input : input)
+      @current_indent = get_indent(@buffer ? @buffer*"\n" + "\n" + input : input)
 
       if config[:auto_indent_rewrite] && @current_indent < last_indent
         rewrite_line last_indent - @current_indent

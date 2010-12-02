@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.summary     = "A ripl plugin which indents your entered Ruby code."
   s.description = "This ripl plugin indents your multi-line Ruby input using coderay."
   s.required_rubygems_version = ">= 1.3.6"
-  s.add_dependency 'ripl', '>= 0.2.5'
-  s.add_dependency 'ripl-multi_line', '>= 0.1.4'
+  s.add_dependency 'ripl', '>= 0.2.6'
+  s.add_dependency 'ripl-multi_line', '>= 0.2.0'
   s.add_dependency 'coderay', '~> 0.9'
   s.files = Dir.glob(%w[{lib,test}/**/*.rb bin/* [A-Z]*.{txt,rdoc} ext/**/*.{rb,c} **/deps.rip]) + %w{Rakefile .gemspec}
   s.extra_rdoc_files = ["README.rdoc", "LICENSE.txt"]
