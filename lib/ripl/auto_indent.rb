@@ -1,7 +1,7 @@
 require 'ripl'
 require 'ripl/multi_line'
 require 'coderay'
-#require 'open3'
+require 'set'
 
 module Ripl
   module AutoIndent
@@ -18,28 +18,26 @@ module Ripl
     end
 
     def get_indent(buffer)
-      #syntax_ok = proc{ |code|
-      #  Open3.popen3('ruby -c'){ |sin, sout, _|
-      #    sin << code
-      #    sin.close
-      #    sout.read.chomp
-      #  } == "Syntax OK"
-      #}
-
-      opening_tokens = %w[begin case class def for if module unless until while do {]
-      closing_tokens = %w[end }]
+      opening_and_modifier_tokens = %w[if unless until while].to_set
+      opening_tokens  = %w[begin case class def for module do {].to_set
+      closing_tokens  = %w[end }].to_set
+      separator = [';', :operator]
       indent = 0
       # parse each token
-      buffer_tokens = CodeRay.scan(buffer, :ruby)
-      buffer_tokens.each{ |token, kind|
+      buffer_tokens = separator + CodeRay.scan(buffer, :ruby).select{|_, kind|
+        kind != :space
+      }
+#puts buffer_tokens
+      buffer_tokens.each_cons(2){ |(old_pair), (token, kind)|
         if kind == :reserved || kind == :operator
-          if opening_tokens.include? token
-            # modifiers cause trouble - so guess, if it is intended as one 
-            #  (because the current line has valid syntax)
-            #next if %w[if unless until while].include?(token) && syntax_ok[ line ]
-
+          # modifiers cause trouble, so
+          #  fix it in 9/10 cases
+          if opening_and_modifier_tokens.include?(token) &&
+               ( old_pair == separator || old_pair == ['=', :operator ] )
             indent += 1
-          elsif closing_tokens.include? token
+          elsif opening_tokens.include?(token)
+            indent += 1
+          elsif closing_tokens.include?(token)
             indent -= 1
           end
         end
@@ -65,7 +63,7 @@ module Ripl
 
     def loop_eval(input)
       last_indent     = @current_indent
-      @current_indent = get_indent(@buffer ? @buffer*"\n" + "\n" + input : input)
+      @current_indent = get_indent(@buffer ? @buffer*";" + ";" + input : input)
 
       if config[:auto_indent_rewrite] && @current_indent < last_indent
         rewrite_line last_indent - @current_indent

@@ -19,7 +19,6 @@ You can change the default two spaces used for indention (per level) with <tt>Ri
 
 == Known bugs
 
-* Statement modifiers (if at the end of the line) get displayed incorrectly
 * Long lines might cause wrong rewriting (if activated)
 
 J-_-L
