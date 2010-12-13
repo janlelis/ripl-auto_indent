@@ -19,23 +19,23 @@ module Ripl
 
     def get_indent(buffer)
       opening_and_modifier_tokens = %w[if unless until while].to_set
-      opening_tokens  = %w[begin case class def for module do {].to_set
-      closing_tokens  = %w[end }].to_set
-      separator = [';', :operator]
-      indent = 0
+      opening_tokens              = %w[begin case class def for module do {].to_set
+      closing_tokens              = %w[end }].to_set
+      separator                   = [';', :operator]
+      indent                      = 0
+
       # parse each token
-      buffer_tokens = separator + CodeRay.scan(buffer, :ruby).select{|_, kind|
+      buffer_tokens = [separator] + CodeRay.scan(buffer, :ruby).select{|_, kind|
         kind != :space
       }
-#puts buffer_tokens
-      buffer_tokens.each_cons(2){ |(old_pair), (token, kind)|
+
+      buffer_tokens.each_cons(2){ |(*old_pair), (token, kind)|
         if kind == :reserved || kind == :operator
           # modifiers cause trouble, so
           #  fix it in 9/10 cases
-          if opening_and_modifier_tokens.include?(token) &&
+          if opening_tokens.include?(token) ||
+             opening_and_modifier_tokens.include?(token) &&
                ( old_pair == separator || old_pair == ['=', :operator ] )
-            indent += 1
-          elsif opening_tokens.include?(token)
             indent += 1
           elsif closing_tokens.include?(token)
             indent -= 1
@@ -63,7 +63,7 @@ module Ripl
 
     def loop_eval(input)
       last_indent     = @current_indent
-      @current_indent = get_indent(@buffer ? @buffer*";" + ";" + input : input)
+      @current_indent = get_indent( @buffer ? @buffer*";"+";"+input : input )
 
       if config[:auto_indent_rewrite] && @current_indent < last_indent
         rewrite_line last_indent - @current_indent
@@ -77,9 +77,9 @@ end
 Ripl::Shell.send :include, Ripl::AutoIndent
 
 # default config
-Ripl.config[:auto_indent_rewrite] = true
-Ripl.config[:auto_indent_space]   = '  '
+Ripl.config[:auto_indent_rewrite] = true  if  Ripl.config[:auto_indent_rewrite].nil?
+Ripl.config[:auto_indent_space] ||= '  '
 Ripl.config[:multi_line_prompt]   = '|  ' if !Ripl.config[:multi_line_prompt] ||
-                                             Ripl.config[:multi_line_prompt] == '|    '
+                                              Ripl.config[:multi_line_prompt] == '|    '
 
 # J-_-L
