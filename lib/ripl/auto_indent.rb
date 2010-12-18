@@ -5,7 +5,7 @@ require 'set'
 
 module Ripl
   module AutoIndent
-    VERSION = '0.1.2'
+    VERSION = '0.1.3'
     TPUT = {
       :sc   => `tput sc`,   # save current cursor position
       :cuu1 => `tput cuu1`, # move cursor on line upwards
