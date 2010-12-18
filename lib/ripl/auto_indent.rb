@@ -62,7 +62,7 @@ module Ripl
     end
 
     def loop_eval(input)
-      last_indent     = @current_indent
+      last_indent     = ( @current_indent ||= 0 )
       @current_indent = get_indent( @buffer ? @buffer*";"+";"+input : input )
 
       if config[:auto_indent_rewrite] && @current_indent < last_indent
