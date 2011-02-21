@@ -1,5 +1,8 @@
+== 0.1.4
+* Compatible with multi_line 0.2.3 (proc as prompt)
+
 == 0.1.3
-* Fixed "ArgumentError: comparison of Fixnum with nil failed"
+* Fix "ArgumentError: comparison of Fixnum with nil failed"
 
 == 0.1.2
 * Fix for modifier statements

@@ -47,7 +47,7 @@ module Ripl
     end
 
     def prompt
-      @buffer ? config[:multi_line_prompt] + config[:auto_indent_space]*@current_indent : super
+      @buffer ? super + config[:auto_indent_space]*@current_indent : super
     end
 
     def rewrite_line(append_indents = 0)
@@ -79,7 +79,5 @@ Ripl::Shell.send :include, Ripl::AutoIndent
 # default config
 Ripl.config[:auto_indent_rewrite] = true  if  Ripl.config[:auto_indent_rewrite].nil?
 Ripl.config[:auto_indent_space] ||= '  '
-Ripl.config[:multi_line_prompt]   = '|  ' if !Ripl.config[:multi_line_prompt] ||
-                                              Ripl.config[:multi_line_prompt] == '|    '
 
 # J-_-L

@@ -1,5 +1,5 @@
 == Description
-A {ripl}[http://github.com/cldwalker/ripl] plugin that indents your entered Ruby code.
+A {ripl}[https://github.com/cldwalker/ripl] plugin that indents your entered Ruby code.
 
 == Install
 Install the gem with
@@ -16,6 +16,7 @@ Add the following line to your <tt>~/.riplrc</tt>
 
 The plugin rewrites the last line (if the there are closing elements). If this is too buggy for you or your terminal does not support it, you can deactivate it with <tt>Ripl.config[:auto_indent_rewrite] = false</tt>.
 You can change the default two spaces used for indention (per level) with <tt>Ripl.config[:auto_indent_space]</tt>.
+The plugin depends on <tt>ripl-multi_line</tt>, so you can set the multi-line prompt with <tt>Ripl.config[:multi_line_prompt]</tt>
 
 == Known bugs
 
