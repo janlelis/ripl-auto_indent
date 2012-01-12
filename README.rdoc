@@ -21,6 +21,5 @@ The plugin depends on <tt>ripl-multi_line</tt>, so you can set the multi-line pr
 == Known bugs
 
 * Not 100% correct ;)
-* Long lines might cause wrong rewriting (if activated)
 
 J-_-L

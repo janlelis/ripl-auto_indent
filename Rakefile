@@ -1,13 +1,13 @@
-require 'rake'
+GEMSPEC = Dir['*.gemspec'].first
 require 'fileutils'
 
 def gemspec
-  @gemspec ||= eval(File.read('.gemspec'), binding, '.gemspec')
+  @gemspec ||= eval(File.read(GEMSPEC), binding, GEMSPEC)
 end
 
 desc "Build the gem"
 task :gem=>:gemspec do
-  sh "gem build .gemspec"
+  sh "gem build #{GEMSPEC}"
   FileUtils.mkdir_p 'pkg'
   FileUtils.mv "#{gemspec.name}-#{gemspec.version}.gem", 'pkg'
 end
